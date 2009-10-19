@@ -1,0 +1,1 @@
+"""Scripts which artists can use to integrate their pieces with the art infrastructure."""
