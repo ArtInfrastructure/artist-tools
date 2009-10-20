@@ -11,12 +11,13 @@
 """
 import string
 import cgi
-import os
+import os, sys
 import time
 import logging
 import urlparse
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import urllib
+from threading import Thread
 
 from art_settings import *
 
@@ -60,17 +61,24 @@ class StatusListener:
 		self.port = port
 		self.server = HTTPServer(('', self.port), StatusWebHandler)
 		self.server.status_listener = self
-
+		self.status_thread = StatusListener.StatusThread()
+		self.status_thread.status_listener = self
+		
 	def start(self):
 		if not self.register_listener():
 			print 'Could not register with %s' % ART_SERVER_HOST
 			return false
-		self.server.serve_forever()
+		self.status_thread.start()
 
 	def stop(self):
 		if not self.unregister_listener(): print 'Could not unregister with %s' % ART_SERVER_HOST
 		self.server.socket.close()
+		self.server.server_close()
 
+	class StatusThread(Thread):
+		def run(self):
+			self.status_listener.server.serve_forever()
+			
 	def register_listener(self):
 		try:
 			params = urllib.urlencode({ 'register':self.port, 'tests':','.join(TEST_NAMES) })
@@ -107,8 +115,8 @@ class StatusListener:
 if __name__ == '__main__':
 	try:
 		sl = StatusListener()
-		print 'Starting status listener'
 		sl.start()
+		while True: time.sleep(10000000)
 	except KeyboardInterrupt:
-		print ' Shutting down status listener'
 		sl.stop()
+		sys.exit()

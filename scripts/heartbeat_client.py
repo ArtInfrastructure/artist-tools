@@ -38,7 +38,8 @@ import urllib
 import pprint
 import traceback
 import datetime
-import time
+import time, sys
+from threading import Thread
 
 from art_settings import *
 
@@ -53,6 +54,7 @@ class HeartbeatClient:
 	def __init__(self, installation_id=INSTALLATION_ID):
 		self.installation_id = installation_id
 		self.heartbeat_url = "http://%s/heartbeat/?%s=%s"
+		self.heartbeat_thread = HeartbeatClient.HeartbeatThread(self)
 
 	def send_heartbeat(self, info=None):
 		url = self.heartbeat_url % (CLOUD_HOST, INSTALLATION_ID_PARAMETER, INSTALLATION_ID)
@@ -62,17 +64,37 @@ class HeartbeatClient:
 		sock.read()
 		sock.close()
 
+	class HeartbeatThread(Thread):
+		def __init__(self, heartbeat_client):
+			self.heartbeat_client = heartbeat_client
+			self.should_run = True
+			Thread.__init__(self)
+
+		def run(self):
+			while self.should_run:
+				try:
+					self.heartbeat_client.send_heartbeat()
+				except:
+					print "Could not send heartbeat: %s" % datetime.datetime.now()
+					#print pprint.pformat(traceback.format_exc())
+				time.sleep(HEARTBEAT_PERIOD)
+			print 'thread finish'
+
+	def start(self):
+		self.heartbeat_thread.start()
+	
+	def stop(self):
+		self.heartbeat_thread.should_run = False
+		
 if __name__ == "__main__":
 	if INSTALLATION_ID == None:
 		print "You must set the INSTALLATION_ID value in art_settings.py to the value given to you by the art technician."
 	else:
-		client = HeartbeatClient()
-		while True:
-			try:
-				client.send_heartbeat();
-			except:
-				print "Could not send heartbeat: %s" % datetime.datetime.now()
-				#print pprint.pformat(traceback.format_exc())
-			time.sleep(HEARTBEAT_PERIOD)
-
+		try:
+			client = HeartbeatClient()
+			client.start()
+			while True: time.sleep(100000)
+		except KeyboardInterrupt:
+			client.stop()
+			sys.exit()
 # Copyright 2009 GORBET + BANERJEE (http://www.gorbetbanerjee.com/) Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
