@@ -11,10 +11,6 @@ ART_SERVER_HOST = "172.16.220.40"
 # The timeout after which the weather client will fail if it hasn't had a response
 WEATHER_TIMEOUT = 80 # in seconds
 
-# The list of test names which your status listener will accept 
-# They must not have a comma in them
-TEST_NAMES = []
-
 # The port on which the status listener will sit
 # Change this if you receive a error like 'Address already in use'
 STATUS_WEB_PORT = 8090

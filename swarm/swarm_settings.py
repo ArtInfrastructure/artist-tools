@@ -1,0 +1,9 @@
+
+MASTER_WEB_HOST = "127.0.0.1"
+MASTER_WEB_PORT = 8199
+SLAVE_WEB_PORT = 8299
+
+# Constants used in the http messaging
+ID_PARAMETER_NAME = "id"
+ACTION_PARAMETER_NAME = "action"
+MESSAGE_PARAMETER_NAME = "message"

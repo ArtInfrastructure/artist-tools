@@ -56,9 +56,15 @@ class StatusWebHandler(BaseHTTPRequestHandler):
 			pass
 
 class StatusListener:
-	"""A wrapper around the status listener API on the on-site server"""
-	def __init__(self, port=STATUS_WEB_PORT):
+	"""A wrapper around the status listener API on the on-site server.
+	test_names must be an array of strings which contain no commas.
+	test_names are communicated to the status infrastructure and may be triggered
+	by the art technician, in which case the string will be POSTed to your status listener.
+	In this status listener, they will be passed into handle_status.
+	"""
+	def __init__(self, port=STATUS_WEB_PORT, test_names=[]):
 		self.port = port
+		self.test_names = test_names
 		self.server = HTTPServer(('', self.port), StatusWebHandler)
 		self.server.status_listener = self
 		self.status_thread = StatusListener.StatusThread()
@@ -67,7 +73,7 @@ class StatusListener:
 	def start(self):
 		if not self.register_listener():
 			print 'Could not register with %s' % ART_SERVER_HOST
-			return false
+			return False
 		self.status_thread.start()
 
 	def stop(self):
@@ -81,7 +87,7 @@ class StatusListener:
 			
 	def register_listener(self):
 		try:
-			params = urllib.urlencode({ 'register':self.port, 'tests':','.join(TEST_NAMES) })
+			params = urllib.urlencode({ 'register':self.port, 'tests':','.join(self.test_names) })
 			f = urllib.urlopen("http://%s/status/" % ART_SERVER_HOST, params)
 			f.read()
 			return True
@@ -100,7 +106,7 @@ class StatusListener:
 	def handle_status(self, status):
 		"""Override this with your status handling implementation.
 		The possible values for the status parameter are: normal, emergency
-		If you have defined TEST_NAMES in the art_settings.py, you may also receive those as status values
+		If you have defined test_names then handle_status may also receive those as status values
 		"""
 		if status == 'normal':
 			print 'Status is normal'
