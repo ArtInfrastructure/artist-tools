@@ -3,7 +3,7 @@
 import time, sys, os
 import logging
 import urlparse
-import httplib
+import httplib, cgi
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import urllib
 from threading import Thread
@@ -39,6 +39,7 @@ class SlaveWebHandler(BaseHTTPRequestHandler):
 			pass
 
 class SlaveHTTPD:
+	"""The httpd wrapper which manages some of the message routing"""
 	def __init__(self, swarm_slave, port=swarm_settings.SLAVE_WEB_PORT):
 		self.port = port
 		self.swarm_slave = swarm_slave
@@ -60,7 +61,6 @@ class SlaveHTTPD:
 
 	def handle_post(self, body):
 		try:
-			#slave_id = body[swarm_settings.ID_PARAMETER_NAME][0]
 			action = body[swarm_settings.ACTION_PARAMETER_NAME][0]
 			message = body[swarm_settings.MESSAGE_PARAMETER_NAME][0]
 			self.swarm_slave.receive_message(action, message)
@@ -69,6 +69,7 @@ class SlaveHTTPD:
 		
 
 class SwarmSlave:
+	"""The class which manages the httpd and provides easy message passing functions"""
 	def __init__(self, id):
 		self.id = id
 		self.slave_httpd = SlaveHTTPD(self)
@@ -80,7 +81,10 @@ class SwarmSlave:
 		self.slave_httpd.stop()
 
 	def receive_message(self, action, message):
-		"""This is where you'd do your application specific work, like triggering a change in the slave hardware"""
+		"""
+		CHANGE ME:
+		This is where you'd do your application specific work, like triggering a change in the slave hardware.
+		"""
 		print 'Slave received %s: "%s" from the master' % (action, message)
 
 	def send_message(self, action, message):
@@ -97,34 +101,20 @@ class SwarmSlave:
 		except:
 			return False
 
-class TestThread(Thread):
-	def __init__(self, slave):
-		self.slave = slave
-		Thread.__init__(self)
-		
-	def run(self):
-		while True:
-			time.sleep(5)
-			print 'sent: %s' % self.slave.send_message('test-action', 'I like traffic lights.')
-			
 if __name__ == "__main__":
+	usage_message = 'Usage: swarm_slave.py <slave id number>'
 	if len(sys.argv) != 2:
-		print 'Usage: swarm_slave.py <slave id number>'
+		print usage_message
 		sys.exit()
 	try:
 		id = int(sys.argv[1])
 	except:
-		print 'Usage: swarm_slave.py <slave id number>'
+		print usage_message
 		sys.exit()
 		
 	slave = SwarmSlave(id)
 	slave.start()
 
-	print 'starting thread'
-	test_thread = TestThread(slave)
-	test_thread.start()
-	print 'started thread'
-	
 	try:
 		while True: time.sleep(10000)
 	except KeyboardInterrupt:
