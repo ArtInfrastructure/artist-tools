@@ -133,7 +133,7 @@ class SwarmMaster:
 		"""Send a message to all of the slaves"""
 		for slave_info in self.slave_infos: 
 			if not self.send_message(slave_info[1], action, message):
-				
+				print 'Error'
 
 if __name__ == "__main__":
 	master = SwarmMaster()

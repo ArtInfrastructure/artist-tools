@@ -70,8 +70,10 @@ class SlaveHTTPD:
 
 class SwarmSlave:
 	"""The class which manages the httpd and provides easy message passing functions"""
-	def __init__(self, id):
+	def __init__(self, id, master_host=swarm_settings.MASTER_WEB_HOST, master_port=swarm_settings.MASTER_WEB_PORT):
 		self.id = id
+		self.master_host = master_host
+		self.master_port = master_port
 		self.slave_httpd = SlaveHTTPD(self)
 		
 	def start(self):
@@ -92,7 +94,7 @@ class SwarmSlave:
 		params = urllib.urlencode({swarm_settings.ID_PARAMETER_NAME:self.id, swarm_settings.ACTION_PARAMETER_NAME:action, swarm_settings.MESSAGE_PARAMETER_NAME:message})
 		headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 		try:
-			conn = httplib.HTTPConnection('%s:%s' % (swarm_settings.MASTER_WEB_HOST, swarm_settings.MASTER_WEB_PORT))
+			conn = httplib.HTTPConnection('%s:%s' % (self.master_host, self.master_port))
 			conn.request("POST", "/slave/message/", params, headers)
 			response = conn.getresponse()
 			response.read()

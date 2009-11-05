@@ -16,7 +16,6 @@ WEATHER_TIMEOUT = 80 # in seconds
 STATUS_WEB_PORT = 8090
 
 # Some debug settings
-#INSTALLATION_ID = 5
-#CLOUD_HOST = "127.0.0.1:8000"
+#INSTALLATION_ID = 21
+#CLOUD_HOST = "127.0.0.1:8080"
 #ART_SERVER_HOST = "127.0.0.1:8000"
-#TEST_NAMES = ['test1', 'test2', 'test3']
