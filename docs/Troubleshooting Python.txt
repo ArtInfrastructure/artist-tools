@@ -1,0 +1,9 @@
+TROUBLESHOOTING
+If you run this script and get an error like "/usr/bin/python: bad interpreter: No such file or directory":
+Find the python interpreter and set the first line in this file to reflect it's full path.
+For example, if the python program is at /bin/python make the first line "#!/bin/python"
+
+If you run this script get an error like "ImportError: No module named urllib":
+Make certain that you have a full modern python (Python 2.5.1 at the time of writing) by running "python --version".
+If you have a python older than 2.4, you will need to upgrade to a newer version.
+
