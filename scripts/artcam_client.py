@@ -49,7 +49,7 @@ class ArtcamClient:
 		result = []
 		for element in photo_elements:
 			image_element = element.xpath('//image')[0]
-			result.append(ArtcamPhoto(self.artcam_id, element.get('id'), element.get('created'), image_element.get('name'), image_element.get('width'), image_element.get('height')))
+			result.append(ArtcamPhoto(self.manager, self.artcam_id, element.get('id'), element.get('created'), image_element.get('name'), image_element.get('width'), image_element.get('height')))
 		return result
 
 	def __get_domain(self):
@@ -60,7 +60,8 @@ class ArtcamClient:
 
 class ArtcamPhoto:
 	"""Wraps the information for an artcam photo"""
-	def __init__(self, artcam_id, photo_id, created, name, width, height):
+	def __init__(self, manager, artcam_id, photo_id, created, name, width, height):
+		self.manager = manager
 		self.artcam_id = artcam_id
 		self.photo_id = photo_id
 		self.created = created
@@ -68,6 +69,10 @@ class ArtcamPhoto:
 		self.width = width
 		self.height = height
 		
+	def __get_photo_url(self):
+		return 'http://%s/media/%s' % (self.manager.art_server_host, self.name)
+	def __set_photo_url(self, url): pass
+	photo_url = property(__get_photo_url, __set_photo_url)
 
 if __name__ == "__main__":
 	try:
@@ -77,6 +82,7 @@ if __name__ == "__main__":
 			print 'Artcam at', client.domain
 			for photo in client.fetch_photos():
 				print '\tphoto', photo.photo_id, 'created:', photo.created, 'name:', photo.name, 'width:', photo.width, 'height:', photo.height
+				print '\t\tphoto url:', photo.photo_url
 	except:
 		print pprint.pformat(traceback.format_exc())
 
