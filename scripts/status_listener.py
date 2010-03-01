@@ -105,22 +105,21 @@ class StatusListener:
 
 	def handle_status(self, status):
 		"""Override this with your status handling implementation.
-		The possible values for the status parameter are: normal, emergency
-		If you have defined test_names then handle_status may also receive those as status values
+		If you have defined test_names then handle_status may receive those as status values
 		"""
-		if status == 'normal':
-			print 'Status is normal'
-			# os.system('/full/path/to/script/reactToNormalStatus.sh')
-		elif status == 'emergency':
-			print 'Status is emergency'
-			# os.system('/full/path/to/script/reactToEmergencyStatus.sh')
-		# this is where you'd add hooks for test names
+		if status == 'explode':
+			print 'Status is explode'
+			# os.system('/full/path/to/script/reactToExplode.sh')
+		elif status == 'freeze-dry':
+			print 'Status is freeze'
+			# os.system('/full/path/to/script/reactToFreeze.sh')
+		# this is where you'd add hooks for your test names
 		else:
 			print 'Unknown status %s' % status
 
 if __name__ == '__main__':
 	try:
-		sl = StatusListener()
+		sl = StatusListener(test_names=['explode', 'freeze-dry'])
 		sl.start()
 		while True: time.sleep(10000000)
 	except KeyboardInterrupt:

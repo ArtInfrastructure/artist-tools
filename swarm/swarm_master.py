@@ -85,8 +85,7 @@ class SwarmMaster:
 		def handle_status(self, status):
 			"""
 			CHANGE ME: This is where you'd implement your application's reaction
-			to emergency or normal status messages, as well as any tests you've
-			defined.
+			to any tests you've defined.
 			"""
 			print 'The SwarmStatusListener received status: %s' % status
 	
