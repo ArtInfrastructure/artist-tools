@@ -3,10 +3,10 @@
 INSTALLATION_ID = None
 
 # The IP (and optionally port) of the public server running in the cloud
-CLOUD_HOST = "127.0.0.1:8080"
+CLOUD_HOST = "sanjoseartcloud.org"
 
 # The IP (and optionally port) of the on-site server
-ART_SERVER_HOST = "127.0.0.1:8000"
+ART_SERVER_HOST = "172.16.220.40"
 
 # The timeout after which the weather client will fail if it hasn't had a response
 WEATHER_TIMEOUT = 80 # in seconds
