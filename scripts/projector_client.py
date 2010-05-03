@@ -37,6 +37,14 @@ class ProjectorClient:
 		"""Send the power on command to the projector"""
 		return self.post_xml(self.projector_info_url % (ART_SERVER_HOST, projector_id), {'power':'0'})
 
+	def mute_projector(self, projector_id):
+		"""Send the mute command to the projector"""
+		return self.post_xml(self.projector_info_url % (ART_SERVER_HOST, projector_id), {'mute':'1'})
+
+	def unmute_projector(self, projector_id):
+		"""Send the unmute command to the projector"""
+		return self.post_xml(self.projector_info_url % (ART_SERVER_HOST, projector_id), {'mute':'0'})
+
 	def post_xml(self, url, parameters):
 		params = urllib.urlencode(parameters)
 		sock = urllib.urlopen(url, params)
@@ -83,6 +91,20 @@ def main():
 			print USAGE_MESSAGE
 			return
 		print client.power_off_projector(projector_id)
+	elif action == 'mute':
+		try:
+			projector_id = sys.argv[2]
+		except IndexError:
+			print USAGE_MESSAGE
+			return
+		print client.mute_projector(projector_id)
+	elif action == 'unmute':
+		try:
+			projector_id = sys.argv[2]
+		except IndexError:
+			print USAGE_MESSAGE
+			return
+		print client.unmute_projector(projector_id)
 	else:
 		print USAGE_MESSAGE
 		return
