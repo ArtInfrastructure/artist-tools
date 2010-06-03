@@ -46,10 +46,11 @@ class FlightDataClient:
 			result.append((datetime.strptime(element.get('timestamp').split('.')[0], TIMESTAMP_FORMAT), element.get('url').split('/')[5]))
 		return result
 	
-	def fetch_snapshot(self, id):
-		return fetch_resource('%s%s/' % (self.api_url, id))
+	def fetch_latest_snapshot(self): return fetch_resource('%slatest.xml' % self.api_url)
+	
+	def fetch_snapshot(self, id): return fetch_resource('%s%s/' % (self.api_url, id))
 
-USAGE_MESSAGE = 'airport_client.py [list|fetch] <snapshot id>'
+USAGE_MESSAGE = 'airport_client.py [list|fetch|fetch-latest] <snapshot id>'
 
 if __name__ == "__main__":
 	try:
@@ -60,6 +61,10 @@ if __name__ == "__main__":
 		elif action == 'fetch':
 			snap_id = sys.argv[2]
 			print client.fetch_snapshot(snap_id)
+		elif action == 'fetch-latest':
+			print client.fetch_latest_snapshot()
+		else:
+			print USAGE_MESSAGE
 	except IndexError:
 		print USAGE_MESSAGE
 		
