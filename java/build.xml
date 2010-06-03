@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<project name="artisttools" default="jars" basedir=".">
+	<property name="srcDir" value="src" />
+	<property name="buildDir" value="build" />
+	<property name="generateDir" value="generate" />
+	<property name="libDir" value="lib" />
+	<property name="jarFile" value="${ant.project.name}.jar" />
+	<property name="wsdlURL" value="http://flightaware.com/commercial/flightxml/data/wsdl1.xml" />
+	
+	<path id="axis.classpath">
+		<fileset dir="${libDir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<taskdef resource="axis-tasks.properties" classpathref="axis.classpath" />
+
+	<path id="classpath">
+		<fileset dir="${libDir}" includes="*.jar" />
+	</path>
+
+	<target name="build">
+		<mkdir dir="${buildDir}" />
+		<mkdir dir="${generateDir}" />
+		<axis-wsdl2java output="${generateDir}" testcase="false" verbose="true" url="${wsdlURL}">
+			<mapping namespace="http://directflight.flightaware.com/soap/DirectFlight" package="com.flightaware.flightxml" />
+		</axis-wsdl2java>
+		
+		<javac destdir="${buildDir}" debug="true" classpathref="classpath">
+			<src path="${generateDir}" />
+			<src path="${srcDir}" />
+		</javac>
+	</target>
+
+	<!--
+	ant flight-xml -Dfx-username="" -Dfx-api-key="" -Dfx-action="[enroute|matar]"
+	-->
+	<target name="flight-xml" depends="jars">
+		<java classpathref="classpath" fork="true" classname="org.sanjoseartcloud.flightxml.FlightXMLExample">
+			<arg value="${fx-username}"/>
+			<arg value="${fx-api-key}"/>
+			<arg value="${fx-action}"/>
+		<classpath>
+			<pathelement path="${jarFile}" />
+			<fileset dir="${libDir}">
+				<include name="**/*.jar" />
+			</fileset>
+		</classpath>
+		</java>
+	</target>
+
+
+	<target name="jars" depends="build">
+		<jar jarfile="${jarFile}">
+			<fileset dir="${buildDir}"></fileset>
+		</jar>
+	</target>
+
+	<target name="clean">
+		<delete dir="${buildDir}" />
+		<delete dir="${generateDir}" />
+		<delete file="${jarFile}" />
+	</target>
+</project>
